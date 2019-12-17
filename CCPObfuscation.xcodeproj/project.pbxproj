@@ -12,6 +12,7 @@
 		00FC6B5523A8A80800D67B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00FC6B5423A8A80800D67B71 /* Assets.xcassets */; };
 		00FC6B5823A8A80800D67B71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00FC6B5623A8A80800D67B71 /* Main.storyboard */; };
 		00FC6B6423A8A80800D67B71 /* CCPObfuscationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B6323A8A80800D67B71 /* CCPObfuscationTests.swift */; };
+		00FC6B7023A8A84600D67B71 /* CCPObfuscation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +36,7 @@
 		00FC6B5F23A8A80800D67B71 /* CCPObfuscationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CCPObfuscationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00FC6B6323A8A80800D67B71 /* CCPObfuscationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCPObfuscationTests.swift; sourceTree = "<group>"; };
 		00FC6B6523A8A80800D67B71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCPObfuscation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 		00FC6B4F23A8A80600D67B71 /* CCPObfuscation */ = {
 			isa = PBXGroup;
 			children = (
+				00FC6B6E23A8A82600D67B71 /* Obfuscation */,
 				00FC6B5023A8A80700D67B71 /* AppDelegate.swift */,
 				00FC6B5223A8A80700D67B71 /* ViewController.swift */,
 				00FC6B5423A8A80800D67B71 /* Assets.xcassets */,
@@ -93,6 +96,14 @@
 				00FC6B6523A8A80800D67B71 /* Info.plist */,
 			);
 			path = CCPObfuscationTests;
+			sourceTree = "<group>";
+		};
+		00FC6B6E23A8A82600D67B71 /* Obfuscation */ = {
+			isa = PBXGroup;
+			children = (
+				00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */,
+			);
+			path = Obfuscation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00FC6B5323A8A80700D67B71 /* ViewController.swift in Sources */,
+				00FC6B7023A8A84600D67B71 /* CCPObfuscation.swift in Sources */,
 				00FC6B5123A8A80700D67B71 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -280,7 +292,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -334,7 +346,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -348,15 +360,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CCPObfuscation/CCPObfuscation.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CCPObfuscation/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = ccp.CCPObfuscation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -366,15 +382,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = CCPObfuscation/CCPObfuscation.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CCPObfuscation/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = ccp.CCPObfuscation;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
