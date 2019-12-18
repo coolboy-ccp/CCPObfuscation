@@ -33,9 +33,9 @@ class CCPObfuscationTests: XCTestCase {
     
     
     let testURL = "/Users/chuchengpeng/Desktop/ForObfusion"
-    func testFindAllFilesSuccess() {
+    func testfilesSuccess() {
         do {
-           let result = try Obfuscation().findAllFiles(in: testURL)
+            let result = try Obfuscation().files(in: testURL, ignores: [], ext: .all)
             assert(result.count > 0, "该目录下没有任何文件")
         } catch {
             assertionFailure(error.localizedDescription)
@@ -43,9 +43,9 @@ class CCPObfuscationTests: XCTestCase {
         
     }
     
-    func testFindAllFilesFailure() {
+    func testfilesFailure() {
         do {
-            let result = try Obfuscation().findAllFiles(in: "aaa")
+            let result = try Obfuscation().files(in: "aaa", ignores: [], ext: .all)
             assert(result.count > 0, "该目录下没有任何文件")
         } catch {
             assertionFailure(error.localizedDescription)
@@ -61,61 +61,61 @@ class CCPObfuscationTests: XCTestCase {
         }
     }
     
-    func testNoteRegs() {
-        let source = """
-//
-        //  AppDelegate.swift
-        //  ForAD
-        //
-        //  Created by 储诚鹏 on 2019/12/2.
-        //  Copyright © 2019 储诚鹏. All rights reserved.
-        //
-/**/
-abc
-123
-/****************/
-/*
-*/
-/*
-abc
-*/
-/* abc----*/
-//// for aa
-        import UIKit
-
-        @UIApplicationMain
-        class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
-            func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-                // Override point for customization after application launch.
-                return true
-            }
-
-            // MARK: UISceneSession Lifecycle
-
-            func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-                // Called when a new scene session is being created.
-                // Use this method to select a configuration to create the new scene with.
-                return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-            }
-
-            func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-                // Called when the user discards a scene session.
-                // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-                // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-            }
-
-
+    func testNewFilesGroup() {
+        do {
+            _ = try Obfuscation().newFilesDocument("testFile")
+        } catch  {
+            assertionFailure("创建失败")
         }
-"""
-        let rlt = try? source.reg(pattern: .notesReg)
-        print(rlt)
-        
 
     }
     
+    func testIgnores() {
+        do {
+            let results = try Obfuscation().files(in: testURL, ignores: [.prefix("Prefix"), .suffix("Suffix"), .contains("Contains"), .document("ignore1")], ext: .all)
+            assert(results.count > 0, "该目录下没有任何文件")
+            for result in results {
+                let path = result.deletingPathExtension().lastPathComponent
+                let needIgnore = path.hasPrefix("Prefix") || path.hasSuffix("Suffix") || path.contains("Contains") || result.path.contains("ignore1/")
+                assert(!needIgnore, "忽略文件失败")
+            }
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+    }
     
-
+    func testDeleteNotesIgnores() {
+        do {
+            let rlt = try Obfuscation().deleteNotes(source: testURL, ignores: [.prefix("Prefix"), .suffix("Suffix"), .contains("Contains"), .document("ignore1")])
+            assert(rlt, "删除注释失败")
+        } catch {
+            assertionFailure(error.localizedDescription)
+        }
+    }
+    
+    
+    func testRenameClassPrefix() {
+        do {
+            try Obfuscation().renameClass(source: testURL, modify: .prefix("_ccp"))
+        } catch  {
+            assertionFailure("重命名类名失败")
+        }
+    }
+    
+    func testRenameClassSuffix() {
+        do {
+            try Obfuscation().renameClass(source: testURL, modify: .suffix("_ccp"))
+        } catch  {
+            assertionFailure("重命名类名失败")
+        }
+    }
+    
+    func testRenameClassRandom() {
+        do {
+            try Obfuscation().renameClass(source: testURL)
+        } catch  {
+            assertionFailure("重命名类名失败")
+        }
+    }
+    
 }

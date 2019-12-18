@@ -14,13 +14,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        do {
-            let result = try Obfuscation().deleteNotes(source: "/Users/chuchengpeng/Desktop/ForObfusion")
-            assert(result, "删除注释失败")
-            Obfuscation().openFinder("/Users/chuchengpeng/Desktop/ForObfusion")
-        } catch  {
-            assertionFailure(error.localizedDescription)
-        }
+//        do {
+//            let result = try Obfuscation().deleteNotes(source: "/Users/chuchengpeng/Desktop/ForObfusion")
+//            assert(result, "删除注释失败")
+//            Obfuscation().openFinder("/Users/chuchengpeng/Desktop/ForObfusion")
+//        } catch  {
+//            assertionFailure(error.localizedDescription)
+//        }
         // Insert code here to initialize your application
     }
 
