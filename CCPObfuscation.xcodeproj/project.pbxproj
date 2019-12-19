@@ -7,12 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0079489023AB4AF3006DB77A /* Obfuscator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079488F23AB4AF3006DB77A /* Obfuscator.swift */; };
+		0079489223AB4B95006DB77A /* DeleteNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489123AB4B95006DB77A /* DeleteNotes.swift */; };
+		0079489423AB4BE6006DB77A /* RenameClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489323AB4BE6006DB77A /* RenameClass.swift */; };
+		0079489623AB4F2D006DB77A /* ObfuscatorModify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489523AB4F2D006DB77A /* ObfuscatorModify.swift */; };
+		0079489823AB50BB006DB77A /* RenameFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489723AB50BB006DB77A /* RenameFunc.swift */; };
+		0079489A23AB547C006DB77A /* RenameProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489923AB547C006DB77A /* RenameProperty.swift */; };
 		00FC6B5123A8A80700D67B71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B5023A8A80700D67B71 /* AppDelegate.swift */; };
 		00FC6B5323A8A80700D67B71 /* ViewC ontroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B5223A8A80700D67B71 /* ViewC ontroller.swift */; };
 		00FC6B5523A8A80800D67B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00FC6B5423A8A80800D67B71 /* Assets.xcassets */; };
 		00FC6B5823A8A80800D67B71 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00FC6B5623A8A80800D67B71 /* Main.storyboard */; };
 		00FC6B6423A8A80800D67B71 /* CCPObfuscationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B6323A8A80800D67B71 /* CCPObfuscationTests.swift */; };
-		00FC6B7023A8A84600D67B71 /* CCPObfuscation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */; };
+		00FC6B7023A8A84600D67B71 /* ObfuscatorUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B6F23A8A84600D67B71 /* ObfuscatorUtils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,6 +32,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0079488F23AB4AF3006DB77A /* Obfuscator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Obfuscator.swift; sourceTree = "<group>"; };
+		0079489123AB4B95006DB77A /* DeleteNotes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteNotes.swift; sourceTree = "<group>"; };
+		0079489323AB4BE6006DB77A /* RenameClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameClass.swift; sourceTree = "<group>"; };
+		0079489523AB4F2D006DB77A /* ObfuscatorModify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObfuscatorModify.swift; sourceTree = "<group>"; };
+		0079489723AB50BB006DB77A /* RenameFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameFunc.swift; sourceTree = "<group>"; };
+		0079489923AB547C006DB77A /* RenameProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameProperty.swift; sourceTree = "<group>"; };
 		00FC6B4D23A8A80600D67B71 /* CCPObfuscation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCPObfuscation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00FC6B5023A8A80700D67B71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00FC6B5223A8A80700D67B71 /* ViewC ontroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewC ontroller.swift"; sourceTree = "<group>"; };
@@ -36,7 +48,7 @@
 		00FC6B5F23A8A80800D67B71 /* CCPObfuscationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CCPObfuscationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00FC6B6323A8A80800D67B71 /* CCPObfuscationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCPObfuscationTests.swift; sourceTree = "<group>"; };
 		00FC6B6523A8A80800D67B71 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCPObfuscation.swift; sourceTree = "<group>"; };
+		00FC6B6F23A8A84600D67B71 /* ObfuscatorUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObfuscatorUtils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,7 +90,7 @@
 		00FC6B4F23A8A80600D67B71 /* CCPObfuscation */ = {
 			isa = PBXGroup;
 			children = (
-				00FC6B6E23A8A82600D67B71 /* Obfuscation */,
+				00FC6B6E23A8A82600D67B71 /* Obfuscator */,
 				00FC6B5023A8A80700D67B71 /* AppDelegate.swift */,
 				00FC6B5223A8A80700D67B71 /* ViewC ontroller.swift */,
 				00FC6B5423A8A80800D67B71 /* Assets.xcassets */,
@@ -98,12 +110,18 @@
 			path = CCPObfuscationTests;
 			sourceTree = "<group>";
 		};
-		00FC6B6E23A8A82600D67B71 /* Obfuscation */ = {
+		00FC6B6E23A8A82600D67B71 /* Obfuscator */ = {
 			isa = PBXGroup;
 			children = (
-				00FC6B6F23A8A84600D67B71 /* CCPObfuscation.swift */,
+				00FC6B6F23A8A84600D67B71 /* ObfuscatorUtils.swift */,
+				0079489523AB4F2D006DB77A /* ObfuscatorModify.swift */,
+				0079488F23AB4AF3006DB77A /* Obfuscator.swift */,
+				0079489123AB4B95006DB77A /* DeleteNotes.swift */,
+				0079489323AB4BE6006DB77A /* RenameClass.swift */,
+				0079489723AB50BB006DB77A /* RenameFunc.swift */,
+				0079489923AB547C006DB77A /* RenameProperty.swift */,
 			);
-			path = Obfuscation;
+			path = Obfuscator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,8 +225,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				00FC6B5323A8A80700D67B71 /* ViewC ontroller.swift in Sources */,
-				00FC6B7023A8A84600D67B71 /* CCPObfuscation.swift in Sources */,
+				00FC6B7023A8A84600D67B71 /* ObfuscatorUtils.swift in Sources */,
+				0079489223AB4B95006DB77A /* DeleteNotes.swift in Sources */,
+				0079489623AB4F2D006DB77A /* ObfuscatorModify.swift in Sources */,
 				00FC6B5123A8A80700D67B71 /* AppDelegate.swift in Sources */,
+				0079489423AB4BE6006DB77A /* RenameClass.swift in Sources */,
+				0079489023AB4AF3006DB77A /* Obfuscator.swift in Sources */,
+				0079489A23AB547C006DB77A /* RenameProperty.swift in Sources */,
+				0079489823AB50BB006DB77A /* RenameFunc.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
