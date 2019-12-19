@@ -8,11 +8,11 @@
 
 import Cocoa
 
-enum ObfuscationType {
-    case className
-    case funcName
-    case deleteBlanks
+enum ObfuscationFunction: CaseIterable {
+    case renameClass
     case deleteNotes
+    
+    case funcName
     case garbageInFunc
     case garbageInClass
     case garbageClasses
@@ -22,41 +22,94 @@ enum ObfuscationType {
     case layout
 }
 
-public enum ObfuscationExtension: String {
-    case h
-    case m
-    case mm
-    case swift
-    case xib
-    case storyboard
-    case c
-    case cpp
-    case `default`
-    case all
-    
-    var filter: [String] {
+extension ObfuscationFunction {
+    func _func(_ obj: Obfuscator) -> (() ->()) {
         switch self {
-        case .default:
-            return ["h", "m", "swift", "mm"]
+        case .renameClass:
+            return obj.renameClass
+        case .deleteNotes:
+            return obj.deleteNotes
         default:
-            return [self.rawValue]
+            return empty
         }
+    }
+    
+    func empty() {
+        print("empty func")
+    }
+    
+}
+
+enum ModifyCondition {
+    case prefix(_ prefix: String)
+    case suffix(_ suffix: String)
+    case none
+
+    func valid(url: URL) -> Bool {
+        let last = url.deletingPathExtension().lastPathComponent
+        switch self {
+        case .prefix(let p):
+            return last.hasPrefix(p)
+        case .suffix(let s):
+            return last.hasSuffix(s)
+        default:
+            return true
+        }
+    }
+    
+}
+
+enum ObfuscationModify {
+    
+    typealias Unit = (oldURL: URL, newURL: URL, oldName: String, newName: String)
+        
+    case prefix(_ prefix: String)
+    case suffix(_ suffix: String)
+    case random
+    
+    func modify(of oldURL: URL) -> Unit? {
+        //分类时，只考虑xxx+xxx的场景
+        let oldFileName = oldURL.deletingPathExtension().lastPathComponent
+        if oldFileName == "main" {  return nil }
+        let components = oldFileName.components(separatedBy: "+")
+        guard (1 ... 2).contains(components.count) else { return nil }
+        let oldName = components.last!
+        let oldClass = components.count == 2 ? components.first! : nil
+        
+        var newName = ""
+        switch self {
+        case .prefix(let p):
+            newName = oldClass != nil ? "\(oldClass!)+\(p + oldName)" : "\(p + oldName)"
+        case .suffix(let s):
+            newName = oldClass != nil ? "\(oldClass!)+\(oldName + s)" : "\(oldName + s)"
+        case .random:
+            let randomIdx = Int.random(in: (0 ... oldName.count))
+            let idx = String.Index(utf16Offset: randomIdx, in: oldName)
+            var varOldName = oldName
+            varOldName.insert(contentsOf: "\(oldName.hashValue)", at: idx)
+            newName = oldClass != nil ? "\(oldClass!)+\(varOldName)" : varOldName
+        }
+        let newFileURL = oldURL.deletingLastPathComponent().appendingPathComponent("\(newName).\(oldURL.pathExtension)")
+        do {
+            try FileManager.default.copyItem(at: oldURL, to: newFileURL)
+            try FileManager.default.removeItem(at: oldURL)
+            return (oldURL, newFileURL, oldFileName, newName)
+        } catch  {
+            print(error.localizedDescription)
+        }
+        return nil
+        
     }
 }
 
-extension ObfuscationExtension: Equatable {
-    public static func == (lhs: ObfuscationExtension, rhs: ObfuscationExtension) -> Bool {
-        return lhs.rawValue == rhs.rawValue
-    }
-    
-    
-}
 
 enum ObfuscationError: Error {
     case emptySource
     case invalidURL(_ url: URL)
     case unkonwn
     case createFilesGroupFailed
+    case failedToCreate(_ url: URL)
+    case noDesktop
 }
 
 extension ObfuscationError: LocalizedError {
@@ -69,6 +122,10 @@ extension ObfuscationError: LocalizedError {
             return base + "空地址"
         case .createFilesGroupFailed:
             return base + "创建新代码文件夹失败"
+        case .failedToCreate(let url):
+            return base + "创建\(url.path)失败"
+        case .noDesktop:
+            return base + "找不到桌面文件夹"
         default:
             return base + "unkonwn error"
         }
@@ -130,11 +187,7 @@ extension Optional where Wrapped: ObfuscationSource {
     }
     
     static var `default`: [ObfuscationIgnores] {
-        return [suffix(".xcassets"), suffix(".plist"), suffix(".app"), suffix(".xctest"), suffix(".xib"), suffix(".storyboard"), suffix(".entitlements"), suffix(".framework"), suffix(".tbd"), suffix(".png"), suffix(".jpeg"), suffix(".gif"), suffix(".jpg"), suffix(".xcodeproj"), suffix(".xcworkspace"), suffix(".md"), suffix(".lock"), suffix(".git"), suffix(".svn"), document("Pods")]
-    }
-    
-    static var renameClass: [ObfuscationIgnores] {
-        return self.default + [equal("AppDelegate")]
+        return [document("Pods")]
     }
     
     static func evalutes(ignores: [ObfuscationIgnores], value: URL) -> Bool {
@@ -147,172 +200,124 @@ extension Optional where Wrapped: ObfuscationSource {
     }
 }
 
-class Obfuscation {
-    typealias Completed = Bool
+
+class Obfuscator {
     
-    func files(in source: ObfuscationSource, ignores: [ObfuscationIgnores], ext: ObfuscationExtension) throws -> [URL] {
+    static let validExtensionsDefault = ["h", "m", "c", "mm", "swift"]
+    fileprivate let validExtensions: [String]!
+    fileprivate let ignores: [ObfuscationIgnores]!
+    fileprivate let modifyCondition: ModifyCondition!
+    fileprivate let modify: ObfuscationModify!
+    fileprivate let source: ObfuscationSource!
+    fileprivate var urls: [URL] = []
+    fileprivate var pbxprojsURL: [URL] = [] //存放工程中类文件路径名称的地方，若此文件缺失，则无法修改工程中文件名称，只能在修改后从文件夹中手动引入
+    
+    func go(funcs: [ObfuscationFunction] = ObfuscationFunction.allCases) {
+        for f in funcs {
+            f._func(self)()
+        }
+    }
+    
+    init(source: ObfuscationSource,
+         modifyCondition: ModifyCondition = .none,
+         modify: ObfuscationModify = .prefix("_ccp"),
+         ignores: [ObfuscationIgnores] = ObfuscationIgnores.default,
+         validExtensions: [String] = Obfuscator.validExtensionsDefault) throws {
+         self.source = source
+         self.modifyCondition = modifyCondition
+         self.modify = modify
+         self.ignores = ignores
+         self.validExtensions = validExtensions
+         try copyToDesktop()
+    }
+    
+    fileprivate func allFilesURL(in document: URL) -> [URL] {
         var urls = [URL]()
-        let url = try source.url()
-        guard let enumerators = FileManager.default.enumerator(atPath: url.path) else {
-            throw ObfuscationError.invalidURL(url)
+        guard let enumerators = FileManager.default.enumerator(atPath: document.path) else {
+            return urls
         }
         while let next = enumerators.nextObject() as? String {
-            let subURL = url.appendingPathComponent(next)
-            if !ext.filter.contains(subURL.pathExtension) && !(ext == .all) { continue }
-            if ObfuscationIgnores.evalutes(ignores: ignores, value: subURL.deletingPathExtension()) { continue }
+            let url = document.appendingPathComponent(next)
             var isDirectory: ObjCBool = false
-            let isExists = FileManager.default.fileExists(atPath: subURL.path, isDirectory: &isDirectory)
+            let isExists = FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
             if !isExists { continue }
             if !isDirectory.boolValue {
-                urls.append(subURL)
+                if url.pathExtension == "pbxproj" {
+                    self.pbxprojsURL.append(url)
+                }
+                urls.append(url)
             }
         }
         return urls
     }
     
-    func deleteNotes(source: ObfuscationSource, ignores: [ObfuscationIgnores] = ObfuscationIgnores.default, ext: ObfuscationExtension = .default) throws -> Completed {
-        let urls = try files(in: source, ignores: ignores, ext: ext)
-        return try urls.reduce(false, { (_, url) -> Bool in
-            let content = try String(contentsOf: url).replace(pattern: .notesReg, with: "")
-            try content.write(to: url, atomically: true, encoding: .utf8)
-            return true
-        })
-    }
-    
-    func renameClass(source: ObfuscationSource, condition: ModifyCondition = .none, modify: ObfuscationModify = .random, ignores: [ObfuscationIgnores] = ObfuscationIgnores.renameClass, ext: ObfuscationExtension = .default) throws -> Completed {
-        var urls = try files(in: source, ignores: ignores, ext: ext)
-        urls = condition.extract(urls: urls)
-        let modifies = modify.modifies(of: urls, base: try! source.url().deletingLastPathComponent().lastPathComponent)
-        for modify in modifies {
-            let name = modify.oldName.replacingOccurrences(of: "+", with: "\\+")
-            let fileContent = try String(contentsOf: modify.oldURL).replace(pattern: "(?<=[^\\w])\(name)(?=[^\\w])", with: modify.newName)
-            try fileContent.write(to: modify.newURL, atomically: true, encoding: .utf8)
-            
-        }
-        return true
-    }
-    
-    func newFilesDocument(_ name: String) throws -> URL {
-        guard let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first else {
-            throw ObfuscationError.createFilesGroupFailed
-        }
-        let documentURL = desktop.appendingPathComponent("CCPObfuscationNew/\(name)")
-        if FileManager.default.fileExists(atPath: documentURL.path) {
-            return documentURL
-        }
-        do {
-            try FileManager.default.createDirectory(at: documentURL, withIntermediateDirectories: true, attributes: nil)
-        } catch  {
-            throw ObfuscationError.createFilesGroupFailed
-        }
-        return documentURL
-    }
-    
-    func openFinder(_ source: ObfuscationSource)  {
-        let panel = NSOpenPanel()
-        panel.directoryURL = try? source.url()
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = true
-        panel.begin { (response) in
-            print(response)
-        }
-    }
-        
-}
-
-enum ModifyCondition {
-    case prefix(_ prefix: String)
-    case suffix(_ suffix: String)
-    case none
-    
-    func extract(urls: [URL]) -> [URL] {
-        
-        return urls.filter { (url) -> Bool in
-            let last = url.deletingPathExtension().lastPathComponent
-            switch self {
-            case .prefix(let p):
-                return last.hasPrefix(p)
-            case .suffix(let s):
-                return last.hasSuffix(s)
-            default:
-                return true
-            }
-        }
-    }
-    
-}
-
-enum ObfuscationModify {
-    
-    typealias ModifyNew = (oldURL: URL, newURL: URL, oldName: String, newName: String)
-    
-    case prefix(_ prefix: String)
-    case suffix(_ suffix: String)
-    case random
-    
-    
-    func modifies(of oldURLs: [URL], base: String) -> [(ModifyNew)] {
-        print(oldURLs)
-        return oldURLs.compactMap {
-            let oldName = $0.deletingPathExtension().lastPathComponent
-            let ext = $0.pathExtension
-            guard let newDocumentName = $0.deletingLastPathComponent().pathComponents.split(separator: base).last?.joined(separator: "/") else {
-                print("\(oldName)-->创建新文件失败")
-                return nil
-            }
+    fileprivate  func deleteNotes() {
+        for url in urls {
+            guard valid(url) else { continue }
+            var content = ""
             do {
-                //分类时，只考虑xxx+xxx的场景
-                let documentURL = try newFilesDocument(newDocumentName)
-                var newName = ""
-                let oldComponents = oldName.components(separatedBy: "+")
-                if oldComponents.count > 2 { return nil }
-                var last = oldComponents.last!
-                switch self {
-                case .prefix(let p):
-                    newName = oldComponents.count > 1 ? oldComponents[0] + "+" + p + last : p + last
-                case .suffix(let s):
-                    newName = oldComponents.count > 1 ? oldComponents[0] + "+" + last + s : last + s
-                case .random:
-                    let randomIdx = Int.random(in: (0 ..< last.count))
-                    newName = oldName
-                    let idx = String.Index(utf16Offset: randomIdx, in: last)
-                    last.insert(contentsOf: UUID().uuidString, at: idx)
-                    newName = oldComponents.count > 1 ? oldComponents[0] + "+" + last : last
-                }
-                let fileURL = documentURL.appendingPathComponent("\(newName).\(ext)")
-                if FileManager.default.fileExists(atPath: fileURL.path) {
-                    return ($0, fileURL, oldName, newName)
-                }
-                if FileManager.default.createFile(atPath: fileURL.path, contents: nil, attributes: nil) {
-                    return ($0, fileURL, oldName, newName)
-                }
-                print("\(oldName)-->\(newName)创建新文件失败")
-                return nil
+                content = try String(contentsOf: url).replace(pattern: .notesReg, with: "")
+                try content.write(to: url, atomically: true, encoding: .utf8)
             }
             catch {
                 print(error.localizedDescription)
-                return nil
             }
         }
     }
     
-    func newFilesDocument(_ name: String) throws -> URL {
-        guard let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first else {
-            throw ObfuscationError.createFilesGroupFailed
+    fileprivate func valid(_ url: URL) -> Bool {
+        return !ObfuscationIgnores.evalutes(ignores: ignores, value: url) && validExtensions.contains(url.pathExtension)
+    }
+    
+    fileprivate func renameClass() {
+        var newUnits = [ObfuscationModify.Unit]()
+        let renamedURLs = urls.compactMap { (url) -> URL? in
+            guard valid(url) else { return nil }
+            guard modifyCondition.valid(url: url) else { return nil }
+            if let new = modify.modify(of: url) {
+                newUnits.append(new)
+                return new.newURL
+            }
+            return url
         }
-        let documentURL = desktop.appendingPathComponent("CCPObfuscationNew/\(name)")
-        if FileManager.default.fileExists(atPath: documentURL.path) {
-            return documentURL
+        for unit in newUnits {
+            urls.removeAll { $0 == unit.oldURL }
+            urls.append(unit.newURL)
+            let oldName = unit.oldName.replacingOccurrences(of: "+", with: "\\+")
+            for url in renamedURLs + pbxprojsURL {
+                do {
+                    let content = try String(contentsOf: url).replace(pattern: "(?<=[^\\w])\(oldName)(?=[^\\w])", with: unit.newName)
+                    try content.write(to: url, atomically: true, encoding: .utf8)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
+        
+    }
+    
+    fileprivate func copyToDesktop() throws {
+        guard let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first else {
+            throw ObfuscationError.noDesktop
+        }
+        let oldURL = try source.url()
+        var newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp")
+        var idx = 0
+        while FileManager.default.fileExists(atPath: newURL.path) {
+            idx += 1
+            newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp_\(idx)")
         }
         do {
-            try FileManager.default.createDirectory(at: documentURL, withIntermediateDirectories: true, attributes: nil)
-        } catch  {
-            throw ObfuscationError.createFilesGroupFailed
+            try FileManager.default.copyItem(at: oldURL, to: newURL)
+            self.urls = allFilesURL(in: newURL)
+            
+        } catch {
+            print(error.localizedDescription)
         }
-        return documentURL
     }
 }
+
+
 
 extension String {
     static var notesReg: String {

@@ -31,90 +31,13 @@ class CCPObfuscationTests: XCTestCase {
         }
     }
     
+ 
     
-    let testURL = "/Users/chuchengpeng/Desktop/ForObfusion"
-    func testfilesSuccess() {
+    func testMoveFiles() {
         do {
-            let result = try Obfuscation().files(in: testURL, ignores: [], ext: .all)
-            assert(result.count > 0, "该目录下没有任何文件")
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-        
-    }
-    
-    func testfilesFailure() {
-        do {
-            let result = try Obfuscation().files(in: "aaa", ignores: [], ext: .all)
-            assert(result.count > 0, "该目录下没有任何文件")
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-    }
-    
-    func testDeleteNotes() {
-        do {
-            let result = try Obfuscation().deleteNotes(source: testURL)
-            assert(result, "删除注释失败")
+            try Obfuscation().moveToNewDocument(source: "/Users/chuchengpeng/Desktop/ForObTest")
         } catch  {
             assertionFailure(error.localizedDescription)
-        }
-    }
-    
-    func testNewFilesGroup() {
-        do {
-            _ = try Obfuscation().newFilesDocument("testFile")
-        } catch  {
-            assertionFailure("创建失败")
-        }
-
-    }
-    
-    func testIgnores() {
-        do {
-            let results = try Obfuscation().files(in: testURL, ignores: [.prefix("Prefix"), .suffix("Suffix"), .contains("Contains"), .document("ignore1")], ext: .all)
-            assert(results.count > 0, "该目录下没有任何文件")
-            for result in results {
-                let path = result.deletingPathExtension().lastPathComponent
-                let needIgnore = path.hasPrefix("Prefix") || path.hasSuffix("Suffix") || path.contains("Contains") || result.path.contains("ignore1/")
-                assert(!needIgnore, "忽略文件失败")
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-    }
-    
-    func testDeleteNotesIgnores() {
-        do {
-            let rlt = try Obfuscation().deleteNotes(source: testURL, ignores: [.prefix("Prefix"), .suffix("Suffix"), .contains("Contains"), .document("ignore1")])
-            assert(rlt, "删除注释失败")
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-    }
-    
-    
-    func testRenameClassPrefix() {
-        do {
-            try Obfuscation().renameClass(source: testURL, modify: .prefix("_ccp"))
-        } catch  {
-            assertionFailure("重命名类名失败")
-        }
-    }
-    
-    func testRenameClassSuffix() {
-        do {
-            try Obfuscation().renameClass(source: testURL, modify: .suffix("_ccp"))
-        } catch  {
-            assertionFailure("重命名类名失败")
-        }
-    }
-    
-    func testRenameClassRandom() {
-        do {
-            try Obfuscation().renameClass(source: testURL)
-        } catch  {
-            assertionFailure("重命名类名失败")
         }
     }
     
