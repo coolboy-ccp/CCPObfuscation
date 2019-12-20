@@ -12,12 +12,12 @@ enum ObfuscationFunction: CaseIterable {
     case deleteNotes
     case renameClass
     case renameProperty
+    case extractHardCode
     
     case funcName
     case garbageInFunc
     case garbageInClass
     case garbageClasses
-    case extractHardCode
     case md5ClassName
     case md5FuncName
     case layout
@@ -32,6 +32,8 @@ extension ObfuscationFunction {
             return obj.deleteNotes
         case .renameProperty:
             return obj.renameProperty
+        case .extractHardCode:
+            return obj.extractHardCode
         default:
             return empty
         }
@@ -85,7 +87,6 @@ enum ObfuscationIgnores {
 }
 
 class Obfuscator {
-    static let validExtensionsDefault = ["h", "m", "c", "mm", "swift"]
     
     var validExtensions: [String] = []
     
@@ -96,11 +97,13 @@ class Obfuscator {
     
     let ignores: [ObfuscationIgnores]
     var modify: ObfuscatorModify!
+    var rootURL: URL!
     
     fileprivate let source: ObfuscationSource!
         
     func go(funcs: [ObfuscationFunction] = ObfuscationFunction.allCases) {
         for f in funcs {
+            validExtensions = ["h", "m", "c", "mm", "swift", "pch"]
             f._func(self)()
         }
     }
@@ -108,13 +111,11 @@ class Obfuscator {
     init(source: ObfuscationSource,
          modifyCondition: ModifyCondition = .none,
          modify: ObfuscatorModify = .prefix("_ccp"),
-         ignores: [ObfuscationIgnores] = ObfuscationIgnores.default,
-         validExtensions: [String] = Obfuscator.validExtensionsDefault) throws {
+         ignores: [ObfuscationIgnores] = ObfuscationIgnores.default) throws {
          self.source = source
          self.modifyCondition = modifyCondition
          self.modify = modify
          self.ignores = ignores
-         self.validExtensions = validExtensions
          try copyToDesktop()
     }
     
@@ -142,23 +143,24 @@ class Obfuscator {
          return !ObfuscationIgnores.evalutes(ignores: ignores, value: url) && validExtensions.contains(url.pathExtension)
      }
      
-     func copyToDesktop() throws {
-         guard let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first else {
-             throw ObfuscationError.noDesktop
-         }
-         let oldURL = try source.url()
-         var newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp")
-         var idx = 0
-         while FileManager.default.fileExists(atPath: newURL.path) {
-             idx += 1
-             newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp_\(idx)")
-         }
-         do {
-             try FileManager.default.copyItem(at: oldURL, to: newURL)
-             self.urls = allFilesURL(in: newURL)
-             
-         } catch {
-             print(error.localizedDescription)
-         }
-     }
+    func copyToDesktop() throws {
+        guard let desktop = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask).first else {
+            throw ObfuscationError.noDesktop
+        }
+        let oldURL = try source.url()
+        var newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp")
+        var idx = 0
+        while FileManager.default.fileExists(atPath: newURL.path) {
+            idx += 1
+            newURL = desktop.appendingPathComponent("\(oldURL.lastPathComponent)_ccp_\(idx)")
+        }
+        do {
+            try FileManager.default.copyItem(at: oldURL, to: newURL)
+            self.urls = allFilesURL(in: newURL)
+            self.rootURL = newURL
+            
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }

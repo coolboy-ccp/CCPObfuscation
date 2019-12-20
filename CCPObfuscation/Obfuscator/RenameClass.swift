@@ -12,7 +12,7 @@ extension ObfuscatorModify {
     fileprivate func file(of oldURL: URL) -> FileUnit? {
         //分类时，只考虑xxx+xxx的场景
         let oldFileName = oldURL.deletingPathExtension().lastPathComponent
-        if oldFileName == "main" {  return nil }
+        if oldFileName == "main" || oldURL.pathExtension == "pch" {  return nil }
         let components = oldFileName.components(separatedBy: "+")
         guard (1 ... 2).contains(components.count) else { return nil }
         let oldName = components.last!

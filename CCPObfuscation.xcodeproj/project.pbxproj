@@ -13,6 +13,7 @@
 		0079489623AB4F2D006DB77A /* ObfuscatorModify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489523AB4F2D006DB77A /* ObfuscatorModify.swift */; };
 		0079489823AB50BB006DB77A /* RenameFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489723AB50BB006DB77A /* RenameFunc.swift */; };
 		0079489A23AB547C006DB77A /* RenameProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489923AB547C006DB77A /* RenameProperty.swift */; };
+		0079489C23AB90F9006DB77A /* ExtractHardCode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0079489B23AB90F9006DB77A /* ExtractHardCode.swift */; };
 		00FC6B5123A8A80700D67B71 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B5023A8A80700D67B71 /* AppDelegate.swift */; };
 		00FC6B5323A8A80700D67B71 /* ViewC ontroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00FC6B5223A8A80700D67B71 /* ViewC ontroller.swift */; };
 		00FC6B5523A8A80800D67B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 00FC6B5423A8A80800D67B71 /* Assets.xcassets */; };
@@ -38,6 +39,7 @@
 		0079489523AB4F2D006DB77A /* ObfuscatorModify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObfuscatorModify.swift; sourceTree = "<group>"; };
 		0079489723AB50BB006DB77A /* RenameFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameFunc.swift; sourceTree = "<group>"; };
 		0079489923AB547C006DB77A /* RenameProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenameProperty.swift; sourceTree = "<group>"; };
+		0079489B23AB90F9006DB77A /* ExtractHardCode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractHardCode.swift; sourceTree = "<group>"; };
 		00FC6B4D23A8A80600D67B71 /* CCPObfuscation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCPObfuscation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00FC6B5023A8A80700D67B71 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00FC6B5223A8A80700D67B71 /* ViewC ontroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewC ontroller.swift"; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				0079489323AB4BE6006DB77A /* RenameClass.swift */,
 				0079489723AB50BB006DB77A /* RenameFunc.swift */,
 				0079489923AB547C006DB77A /* RenameProperty.swift */,
+				0079489B23AB90F9006DB77A /* ExtractHardCode.swift */,
 			);
 			path = Obfuscator;
 			sourceTree = "<group>";
@@ -231,6 +234,7 @@
 				00FC6B5123A8A80700D67B71 /* AppDelegate.swift in Sources */,
 				0079489423AB4BE6006DB77A /* RenameClass.swift in Sources */,
 				0079489023AB4AF3006DB77A /* Obfuscator.swift in Sources */,
+				0079489C23AB90F9006DB77A /* ExtractHardCode.swift in Sources */,
 				0079489A23AB547C006DB77A /* RenameProperty.swift in Sources */,
 				0079489823AB50BB006DB77A /* RenameFunc.swift in Sources */,
 			);

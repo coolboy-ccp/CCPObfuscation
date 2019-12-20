@@ -49,7 +49,6 @@ extension ObfuscatorModify {
                     properties.append((old, new))
                 }
             }
-            return properties
         } catch {
             print(error.localizedDescription)
         }
@@ -93,7 +92,7 @@ extension Obfuscator {
             try content.write(to: url, atomically: true, encoding: .utf8)
             
         } catch {
-            print(error)
+            print(error.localizedDescription)
         }
     }
 }
