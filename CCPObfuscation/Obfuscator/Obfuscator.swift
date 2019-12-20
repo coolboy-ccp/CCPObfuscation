@@ -13,8 +13,8 @@ enum ObfuscationFunction: CaseIterable {
     case renameClass
     case renameProperty
     case extractHardCode
+    case renameFunc
     
-    case funcName
     case garbageInFunc
     case garbageInClass
     case garbageClasses
@@ -34,6 +34,8 @@ extension ObfuscationFunction {
             return obj.renameProperty
         case .extractHardCode:
             return obj.extractHardCode
+        case .renameFunc:
+            return obj.renameFunc
         default:
             return empty
         }
@@ -110,7 +112,7 @@ class Obfuscator {
     
     init(source: ObfuscationSource,
          modifyCondition: ModifyCondition = .none,
-         modify: ObfuscatorModify = .prefix("_ccp"),
+         modify: ObfuscatorModify = .prefix("CCPObfuscator"),
          ignores: [ObfuscationIgnores] = ObfuscationIgnores.default) throws {
          self.source = source
          self.modifyCondition = modifyCondition
